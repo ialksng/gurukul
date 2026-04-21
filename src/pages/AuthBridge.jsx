@@ -6,18 +6,19 @@ export default function AuthBridge() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 1. Catch the token and productId from the URL
+    // 1. Catch the token, productId, and category from the URL
     const token = searchParams.get('token');
     const productId = searchParams.get('productId');
+    const category = searchParams.get('category') || 'course'; // Fallback to 'course' if missing
 
     if (token) {
       // 2. Save the token to Gurukul's local storage (This logs them in!)
       localStorage.setItem('token', token);
       
-      // 3. Teleport them to the course viewer
+      // 3. Teleport them to the dynamic viewer
       if (productId) {
-        // NOTE: Change '/learn/' to whatever your actual course viewer route is in Gurukul!
-        navigate(`/learn/${productId}`, { replace: true });
+        // Will now dynamically navigate to /learn/notes/[id] or /learn/course/[id]
+        navigate(`/learn/${category}/${productId}`, { replace: true });
       } else {
         // Fallback
         navigate('/dashboard', { replace: true });
