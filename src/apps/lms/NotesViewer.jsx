@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, Loader2, Database, Zap, CheckCircle2, BotMessageSquare } from 'lucide-react';
+import { ExternalLink, Loader2, Database, CheckCircle2, BotMessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
-import NotionRenderer from './NotionRenderer'; // Import the renderer you copied
+import NotionRenderer from './NotionRenderer'; 
 
 export default function NotesViewer({ title, notionUrl, productId }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +19,8 @@ export default function NotesViewer({ title, notionUrl, productId }) {
             
             try {
                 setIsLoading(true);
-                const response = await fetch(`${API}/api/lms/notion-content`, {
+                // Points to the updated notes route
+                const response = await fetch(`${API}/api/notes/notion-content`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ notionUrl })
@@ -31,7 +32,7 @@ export default function NotesViewer({ title, notionUrl, productId }) {
                 setBlocks(data.blocks || []);
             } catch (err) {
                 console.error(err);
-                setError("Could not load the document. Ensure the Notion page is published or shared with your Notion integration.");
+                setError("Could not load the document. Ensure the Notion page is shared with your Notion integration.");
             } finally {
                 setIsLoading(false);
             }
@@ -123,18 +124,22 @@ export default function NotesViewer({ title, notionUrl, productId }) {
                 {isLoading && (
                     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0f172a] text-amber-500">
                         <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                        <p className="text-sm font-bold tracking-widest uppercase">Fetching Document Natively...</p>
+                        <p className="text-sm font-bold tracking-widest uppercase">Loading Document...</p>
                     </div>
                 )}
                 
                 {!isLoading && error && (
                     <div className="text-red-400 text-center mt-10 p-4 border border-red-500/30 bg-red-500/10 rounded-lg">
                         {error}
+                        <div className="mt-4 text-sm text-gray-300">
+                            <strong>Did you forget to invite the Notion Bot?</strong> <br/>
+                            Go to your Notion Page → Click the 3 dots (...) in top right → Connections → Add your Notion Integration.
+                        </div>
                     </div>
                 )}
 
                 {/* Render Native React Components */}
-                {!isLoading && !error && (
+                {!isLoading && !error && blocks.length > 0 && (
                     <NotionRenderer content={blocks} />
                 )}
             </div>
