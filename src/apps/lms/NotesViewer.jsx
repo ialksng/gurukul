@@ -1,7 +1,10 @@
+// File: src/apps/lms/NotesViewer.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Database, CheckCircle2, BotMessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 import DOMPurify from 'dompurify'; 
+import './NotesViewer.css'; // Import the new CSS file
 
 export default function NotesViewer({ title, productId }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +38,6 @@ export default function NotesViewer({ title, productId }) {
 
                 const rawHtml = await response.text();
 
-                // EXPANDED: Allowed more tags and attributes for Proton Docs compatibility
                 const cleanHtml = DOMPurify.sanitize(rawHtml, {
                     ALLOWED_TAGS: [
                         'b', 'i', 'em', 'strong', 'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
@@ -126,80 +128,52 @@ export default function NotesViewer({ title, productId }) {
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-120px)] w-full bg-[#0f172a] rounded-xl overflow-hidden border border-white/10 shadow-2xl relative select-none">
+        <div className="nv-container">
             
-            {/* INJECTED: Document Styles Restorer to fix Tailwind CSS Resets */}
-            <style>
-                {`
-                    @media print {
-                        body { display: none !important; }
-                    }
-                    .secure-content-wrapper ::selection { background: rgba(255,0,0,0.1); color: inherit; }
-                    .secure-content-wrapper img { pointer-events: none; } 
-                    
-                    /* RESTORE BROWSER DEFAULTS FOR NOTES OVERRIDING TAILWIND */
-                    .proton-doc p { margin-bottom: 1.2rem; line-height: 1.7; }
-                    .proton-doc h1 { font-size: 2.5rem; font-weight: bold; margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
-                    .proton-doc h2 { font-size: 2rem; font-weight: bold; margin-top: 2rem; margin-bottom: 1rem; }
-                    .proton-doc h3 { font-size: 1.5rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; }
-                    
-                    /* FIX LISTS (Bullets and Numbers) */
-                    .proton-doc ul { list-style-type: disc !important; padding-left: 2rem !important; margin-bottom: 1.5rem !important; }
-                    .proton-doc ol { list-style-type: decimal !important; padding-left: 2rem !important; margin-bottom: 1.5rem !important; }
-                    .proton-doc li { margin-bottom: 0.5rem !important; display: list-item !important; }
-                    
-                    /* FIX IMAGES */
-                    .proton-doc img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 1.5rem auto; display: block; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-                    
-                    /* FIX TABLES */
-                    .proton-doc table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; }
-                    .proton-doc th, .proton-doc td { border: 1px solid #cbd5e1; padding: 0.75rem; text-align: left; }
-                    .proton-doc th { background-color: #f1f5f9; font-weight: bold; }
-                    
-                    /* FIX CODE BLOCKS AND QUOTES */
-                    .proton-doc pre, .proton-doc code { background-color: #f1f5f9; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
-                    .proton-doc pre { padding: 1rem; overflow-x: auto; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; }
-                    .proton-doc pre code { background-color: transparent; padding: 0; }
-                    .proton-doc blockquote { border-left: 4px solid #cbd5e1; padding-left: 1rem; color: #475569; font-style: italic; margin-bottom: 1.5rem; }
-                    .proton-doc a { color: #2563eb; text-decoration: underline; pointer-events: none; } /* Disabled links for security */
-                `}
-            </style>
-
-            <div className="bg-black/40 backdrop-blur-md p-3 md:px-6 flex flex-wrap gap-4 justify-between items-center border-b border-white/5 z-20">
-                <div className="flex items-center gap-3">
-                    <span className="text-slate-200 font-bold tracking-wide">{title}</span>
+            <div className="nv-header">
+                <div className="nv-title">
+                    <span>{title}</span>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <button onClick={handleAskIndra} className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg font-bold text-sm transition-all">
-                        <BotMessageSquare size={16} className="text-amber-400" />
+                <div className="nv-actions">
+                    <button onClick={handleAskIndra} className="nv-btn nv-btn-indra">
+                        <BotMessageSquare size={16} className="icon" />
                         Ask Indra
                     </button>
 
-                    <button onClick={handleSaveToSmartSphere} disabled={isSaving || isSaved} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-lg ${isSaved ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 text-black hover:scale-105'}`}>
-                        {isSaving ? <><Loader2 size={16} className="animate-spin" /> Syncing...</> : isSaved ? <><CheckCircle2 size={16} /> Saved to Vault</> : <><Database size={16} /> Save to SmartSphere</>}
+                    <button 
+                        onClick={handleSaveToSmartSphere} 
+                        disabled={isSaving || isSaved} 
+                        className={`nv-btn ${isSaved ? 'nv-btn-saved' : 'nv-btn-save'}`}
+                    >
+                        {isSaving ? (
+                            <><Loader2 size={16} className="spin-icon" /> Syncing...</>
+                        ) : isSaved ? (
+                            <><CheckCircle2 size={16} /> Saved to Vault</>
+                        ) : (
+                            <><Database size={16} /> Save to SmartSphere</>
+                        )}
                     </button>
                 </div>
             </div>
 
-            <div className="relative flex-1 w-full bg-white text-black overflow-y-auto p-6 md:p-12 secure-content-wrapper" ref={containerRef}>
+            <div className="nv-content-wrapper" ref={containerRef}>
                 {isLoading && (
-                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0f172a] text-amber-500">
-                        <Loader2 size={40} className="animate-spin mb-4" />
-                        <p className="text-sm font-bold tracking-widest uppercase">Decrypting Content...</p>
+                    <div className="nv-loader-overlay">
+                        <Loader2 size={40} className="spin-icon" />
+                        <p className="nv-loader-text">Decrypting Content...</p>
                     </div>
                 )}
                 
                 {!isLoading && error && (
-                    <div className="text-red-400 text-center mt-10 p-4 border border-red-500/30 bg-[#0f172a] rounded-lg h-full flex flex-col justify-center">
-                        <p className="font-bold text-xl">{error}</p>
+                    <div className="nv-error-box">
+                        <p>{error}</p>
                     </div>
                 )}
 
-                {/* Applied proton-doc class here to scope the CSS fixes */}
                 {!isLoading && !error && htmlContent && (
                     <div 
-                        className="max-w-4xl mx-auto proton-doc text-gray-800" 
+                        className="proton-doc" 
                         dangerouslySetInnerHTML={{ __html: htmlContent }} 
                     />
                 )}
