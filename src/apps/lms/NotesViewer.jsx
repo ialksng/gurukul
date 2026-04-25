@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Database, CheckCircle2, BotMessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 import DOMPurify from 'dompurify'; 
-import './NotesViewer.css'; // Import the new CSS file
+import './NotesViewer.css'; // Importing the new CSS
 
 export default function NotesViewer({ title, productId }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -38,16 +38,12 @@ export default function NotesViewer({ title, productId }) {
 
                 const rawHtml = await response.text();
 
+                // MAGIC CONFIGURATION: 
+                // FORCE_BODY and ADD_TAGS ensure Proton's inline <style> tags survive the purification
                 const cleanHtml = DOMPurify.sanitize(rawHtml, {
-                    ALLOWED_TAGS: [
-                        'b', 'i', 'em', 'strong', 'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
-                        'ul', 'ol', 'li', 'div', 'span', 'img', 'table', 'tr', 'td', 'th', 'tbody', 'thead', 
-                        'style', 'br', 'hr', 'blockquote', 'pre', 'code', 'u', 's'
-                    ],
-                    ALLOWED_ATTR: [
-                        'href', 'src', 'style', 'class', 'data-license-tracker', 
-                        'width', 'height', 'alt', 'id', 'align', 'valign'
-                    ] 
+                    FORCE_BODY: true,
+                    ADD_TAGS: ['style', 'iframe'],
+                    ALLOWED_ATTR: ['style', 'class', 'width', 'height', 'data-license-tracker', 'src', 'alt', 'href', 'id', 'align', 'valign'] 
                 });
 
                 setHtmlContent(cleanHtml);
@@ -172,10 +168,12 @@ export default function NotesViewer({ title, productId }) {
                 )}
 
                 {!isLoading && !error && htmlContent && (
-                    <div 
-                        className="proton-doc" 
-                        dangerouslySetInnerHTML={{ __html: htmlContent }} 
-                    />
+                    <div className="proton-doc-container">
+                        <div 
+                            className="proton-doc" 
+                            dangerouslySetInnerHTML={{ __html: htmlContent }} 
+                        />
+                    </div>
                 )}
             </div>
         </div>

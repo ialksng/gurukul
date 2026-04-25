@@ -105,10 +105,9 @@
   position: relative;
   flex: 1;
   width: 100%;
-  background-color: white;
-  color: black;
+  background-color: #f8fafc; /* Soft document background */
   overflow-y: auto;
-  padding: 1.5rem 3rem;
+  padding: 2rem 4rem;
 }
 
 .nv-loader-overlay {
@@ -157,36 +156,68 @@
 }
 
 /* =========================================
-   PROTON DOCS FORMATTING RESTORATION
+   THE MAGIC FIX: PROTON DOCS FORMATTING
+   This explicitly tells the browser to IGNORE
+   Tailwind CSS and restore standard word document styles
    ========================================= */
-.proton-doc {
-  max-width: 56rem; 
+
+.proton-doc-container {
+  background: white;
+  padding: 3rem 4rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
   margin: 0 auto;
-  color: #1f2937; 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: black;
 }
 
-.proton-doc p { margin-bottom: 1.2rem; line-height: 1.7; }
-.proton-doc h1 { font-size: 2.5rem; font-weight: bold; margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
-.proton-doc h2 { font-size: 2rem; font-weight: bold; margin-top: 2rem; margin-bottom: 1rem; }
-.proton-doc h3 { font-size: 1.5rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; }
+/* 1. Force revert all inner elements to browser default (strips Tailwind) */
+.proton-doc * {
+  all: revert;
+}
 
-/* FIX LISTS (Bullets and Numbers) */
-.proton-doc ul { list-style-type: disc !important; padding-left: 2rem !important; margin-bottom: 1.5rem !important; }
-.proton-doc ol { list-style-type: decimal !important; padding-left: 2rem !important; margin-bottom: 1.5rem !important; }
-.proton-doc li { margin-bottom: 0.5rem !important; display: list-item !important; }
+/* 2. Base Document Typography */
+.proton-doc {
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+  font-size: 11pt; /* Standard doc size */
+}
 
-/* FIX IMAGES */
-.proton-doc img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin: 1.5rem auto; display: block; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+/* 3. Ensure Lists actually show bullets and numbers */
+.proton-doc ul {
+  list-style-type: disc !important;
+  padding-left: 40px !important;
+  margin-bottom: 1em !important;
+}
+.proton-doc ol {
+  list-style-type: decimal !important;
+  padding-left: 40px !important;
+  margin-bottom: 1em !important;
+}
+.proton-doc li {
+  display: list-item !important;
+  margin-bottom: 0.5em !important;
+}
 
-/* FIX TABLES */
-.proton-doc table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; }
-.proton-doc th, .proton-doc td { border: 1px solid #cbd5e1; padding: 0.75rem; text-align: left; }
-.proton-doc th { background-color: #f1f5f9; font-weight: bold; }
+/* 4. Fix Headings */
+.proton-doc h1 { font-size: 2.5em !important; font-weight: bold !important; margin-bottom: 0.5em !important; }
+.proton-doc h2 { font-size: 1.8em !important; font-weight: bold !important; margin-bottom: 0.5em !important; }
+.proton-doc h3 { font-size: 1.4em !important; font-weight: bold !important; margin-bottom: 0.5em !important; }
 
-/* FIX CODE BLOCKS AND QUOTES */
-.proton-doc pre, .proton-doc code { background-color: #f1f5f9; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
-.proton-doc pre { padding: 1rem; overflow-x: auto; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; }
-.proton-doc pre code { background-color: transparent; padding: 0; }
-.proton-doc blockquote { border-left: 4px solid #cbd5e1; padding-left: 1rem; color: #475569; font-style: italic; margin-bottom: 1.5rem; }
-.proton-doc a { color: #2563eb; text-decoration: underline; pointer-events: none; }
+/* 5. Fix Image Resizing (prevents massive stretched images) */
+.proton-doc img {
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 1em 0;
+}
+
+/* 6. Fix Tables */
+.proton-doc table {
+  border-collapse: collapse !important;
+  width: 100% !important;
+  margin: 1em 0 !important;
+}
+.proton-doc th, .proton-doc td {
+  border: 1px solid #ccc !important;
+  padding: 8px !important;
+}
