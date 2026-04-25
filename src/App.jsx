@@ -2,8 +2,6 @@ import { BrowserRouter, Routes, Route, useParams, useNavigate, useSearchParams }
 import { BookOpen, GraduationCap, LayoutDashboard, ArrowLeft, PlayCircle, Loader2, Cpu, LogOut, Terminal } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Workspace from './apps/workspace/Workspace';
-
-// Import components
 import NotesViewer from './apps/lms/NotesViewer';
 
 // --- 1. GLOBAL COMPONENTS ---
@@ -13,15 +11,14 @@ function GlobalNavbar() {
   
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = 'https://ialksng.me/login'; // Redirect to main site login
+    window.location.href = 'https://ialksng.me/login'; 
   };
 
   return (
     <nav className="glass-panel sticky top-0 z-50 border-b border-white/10 w-full">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        {/* Logo */}
         <div 
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/')}
           className="flex items-center gap-3 cursor-pointer group"
         >
           <div className="w-10 h-10 rounded-lg neon-border-cyan flex items-center justify-center bg-black/50 group-hover:scale-105 transition-transform">
@@ -32,7 +29,6 @@ function GlobalNavbar() {
           </span>
         </div>
 
-        {/* Links */}
         <div className="hidden md:flex items-center gap-8 font-bold text-sm tracking-widest text-slate-300">
           <button onClick={() => navigate('/dashboard')} className="hover:text-[#00f0ff] transition-colors flex items-center gap-2">
             <LayoutDashboard size={16}/> DASHBOARD
@@ -45,7 +41,6 @@ function GlobalNavbar() {
           </a>
         </div>
 
-        {/* Profile / Logout */}
         <button 
           onClick={handleLogout}
           className="flex items-center gap-2 text-slate-400 hover:text-red-400 transition-colors font-bold text-sm"
@@ -72,10 +67,9 @@ function GlobalFooter() {
   );
 }
 
-// Layout Wrapper
 function Layout({ children }) {
   return (
-    <div className="flex flex-col min-h-screen relative">
+    <div className="flex flex-col min-h-screen relative bg-[#030308]">
       <GlobalNavbar />
       <main className="flex-1 flex flex-col w-full">
         {children}
@@ -86,7 +80,35 @@ function Layout({ children }) {
 }
 
 
-// --- 2. DASHBOARD ---
+// --- 2. PUBLIC HERO LANDING PAGE ---
+function LandingPage() {
+  const navigate = useNavigate();
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center text-center p-6 relative overflow-hidden w-full">
+      {/* Ambient Glowing Backgrounds */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#00f0ff]/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#b026ff]/20 blur-[120px] rounded-full pointer-events-none"></div>
+
+      <Cpu size={80} className="text-[#00f0ff] mb-8 opacity-80" />
+      <h1 className="text-5xl md:text-7xl font-orbitron font-black text-white mb-6 tracking-wider uppercase">
+        <span className="neon-text-cyan">Gurukul</span> Nexus
+      </h1>
+      <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-rajdhani tracking-widest mb-10 leading-relaxed">
+        THE NEXT-GENERATION AI LEARNING ENVIRONMENT. MASTER PROTOCOLS, EXECUTE CODE, AND UPGRADE YOUR SKILLS IN A SECURE SANDBOX.
+      </p>
+
+      <button 
+        onClick={() => navigate('/dashboard')}
+        className="px-10 py-4 bg-[#00f0ff]/10 border-2 border-[#00f0ff] text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black font-orbitron font-bold tracking-widest uppercase rounded-lg transition-all shadow-[0_0_20px_rgba(0,240,255,0.2)] hover:shadow-[0_0_40px_rgba(0,240,255,0.6)]"
+      >
+        Initiate Sequence
+      </button>
+    </div>
+  );
+}
+
+
+// --- 3. DASHBOARD ---
 function StudyDashboard() {
   const [courses] = useState([
     { id: 1, title: 'Advanced Algorithms', progress: 75, totalModules: 12, type: 'CORE' },
@@ -96,8 +118,6 @@ function StudyDashboard() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto w-full animate-fade-in">
-      
-      {/* Header Profile Section */}
       <div className="glass-panel neon-border-cyan rounded-2xl p-8 mb-10 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#00f0ff] opacity-10 blur-[100px] rounded-full pointer-events-none"></div>
         
@@ -122,14 +142,12 @@ function StudyDashboard() {
 
       <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
         <BookOpen className="text-[#00f0ff]" size={24} />
-        <h2 className="text-2xl font-orbitron font-bold tracking-widest uppercase">Active Databanks</h2>
+        <h2 className="text-2xl font-orbitron font-bold tracking-widest uppercase text-white">Active Databanks</h2>
       </div>
 
-      {/* Grid of Courses */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {courses.map(course => (
           <div key={course.id} className="glass-panel rounded-2xl p-6 hover:-translate-y-2 transition-all duration-300 relative group overflow-hidden border border-white/5 hover:border-[#00f0ff]/50">
-            {/* Hover Glow */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#00f0ff]/0 to-[#00f0ff]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             
             <div className="flex justify-between items-start mb-6">
@@ -159,7 +177,6 @@ function StudyDashboard() {
               </div>
             </div>
             
-            {/* Holographic Button */}
             <button className="w-full mt-6 py-3 bg-white/5 border border-white/10 rounded-xl font-bold tracking-widest text-sm text-slate-300 group-hover:bg-[#00f0ff]/10 group-hover:border-[#00f0ff]/50 group-hover:text-[#00f0ff] transition-all">
               {course.progress > 0 ? 'RESUME LINK' : 'INITIATE'}
             </button>
@@ -170,7 +187,7 @@ function StudyDashboard() {
   );
 }
 
-// --- 3. SECURE VIEWER ---
+// --- 4. SECURE VIEWER ---
 function LearnViewer() {
   const { category, id } = useParams();
   const navigate = useNavigate();
@@ -206,7 +223,6 @@ function LearnViewer() {
 
         setProduct(productData);
       } catch (err) {
-        console.error("LearnViewer Error:", err.message);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -237,9 +253,7 @@ function LearnViewer() {
         </div>
         <h2 className="text-3xl font-orbitron font-bold mb-4 text-white uppercase tracking-widest">Access Denied</h2>
         <p className="text-slate-400 mb-8 max-w-md mx-auto font-bold tracking-wide text-sm">{error}</p>
-        <div className="flex gap-4 justify-center">
-          <a href="https://ialksng.me/store" className="px-8 py-3 bg-[#ef4444]/20 border border-red-500 text-red-400 font-bold rounded-xl hover:bg-[#ef4444]/40 transition-all tracking-widest uppercase text-sm">Return to Base</a>
-        </div>
+        <a href="https://ialksng.me/store" className="px-8 py-3 bg-[#ef4444]/20 border border-red-500 text-red-400 font-bold rounded-xl hover:bg-[#ef4444]/40 transition-all tracking-widest uppercase text-sm">Return to Base</a>
       </div>
     );
   }
@@ -267,7 +281,7 @@ function LearnViewer() {
   );
 }
 
-// --- 4. AUTH BRIDGE ---
+// --- 5. AUTH BRIDGE ---
 function AuthBridge() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -282,7 +296,7 @@ function AuthBridge() {
       setTimeout(() => {
         if (productId) navigate(`/learn/${category}/${productId}`, { replace: true });
         else navigate('/dashboard', { replace: true });
-      }, 1500); // Artificial delay for cool sci-fi loading effect
+      }, 1500); 
     } else {
       navigate('/login', { replace: true });
     }
@@ -301,16 +315,19 @@ function AuthBridge() {
   );
 }
 
-// --- 5. MAIN ROUTER ---
+// --- 6. MAIN ROUTER ---
 export default function App() {
   return (
     <BrowserRouter>
       <Layout>
         <Routes>
-          <Route path="/" element={<StudyDashboard />} />
+          {/* Default Route is now the Public Landing Page */}
+          <Route path="/" element={<LandingPage />} />
+          
           <Route path="/dashboard" element={<StudyDashboard />} />
           <Route path="/auth-bridge" element={<AuthBridge />} />
           <Route path="/learn/:category/:id" element={<LearnViewer />} />
+          
           <Route path="/login" element={
             <div className="flex-1 flex items-center justify-center w-full">
               <div className="text-center p-12 glass-panel neon-border-cyan rounded-2xl max-w-lg w-full mx-4">
@@ -325,6 +342,7 @@ export default function App() {
               </div>
             </div>
           } />
+          
           <Route path="/workspace/:pathId/:lessonId" element={<Workspace />} />
         </Routes>
       </Layout>
