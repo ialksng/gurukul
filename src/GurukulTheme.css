@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #030308; 
+  color: #e2e8f0;
+  font-family: 'Rajdhani', sans-serif;
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.05), transparent 30%),
+    radial-gradient(circle at 85% 30%, rgba(138, 43, 226, 0.05), transparent 30%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.neon-border-cyan {
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.1), inset 0 0 10px rgba(0, 240, 255, 0.05);
+}
+
+.neon-border-cyan:hover {
+  border-color: rgba(0, 240, 255, 0.8);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+.neon-text-cyan {
+  color: #00f0ff;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+.neon-text-purple {
+  color: #b026ff;
+  text-shadow: 0 0 8px rgba(176, 38, 255, 0.6);
+}
+
+.glass-panel {
+  background: rgba(10, 10, 15, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #030308;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00f0ff;
+}

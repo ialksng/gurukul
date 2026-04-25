@@ -1,74 +1,176 @@
-import { BrowserRouter, Routes, Route, useParams, useNavigate } from 'react-router-dom';
-import { BookOpen, GraduationCap, LayoutDashboard, ArrowLeft, PlayCircle, Loader2 } from 'lucide-react';
+import { BrowserRouter, Routes, Route, useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { BookOpen, GraduationCap, LayoutDashboard, ArrowLeft, PlayCircle, Loader2, Cpu, LogOut, Terminal } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 // Import components
-import AuthBridge from './pages/AuthBridge';
 import NotesViewer from './apps/lms/NotesViewer';
 
-// --- 1. DASHBOARD ---
+// --- 1. GLOBAL COMPONENTS ---
+
+function GlobalNavbar() {
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = 'https://ialksng.me/login'; // Redirect to main site login
+  };
+
+  return (
+    <nav className="glass-panel sticky top-0 z-50 border-b border-white/10 w-full">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        {/* Logo */}
+        <div 
+          onClick={() => navigate('/dashboard')}
+          className="flex items-center gap-3 cursor-pointer group"
+        >
+          <div className="w-10 h-10 rounded-lg neon-border-cyan flex items-center justify-center bg-black/50 group-hover:scale-105 transition-transform">
+            <Cpu className="text-[#00f0ff]" size={24} />
+          </div>
+          <span className="font-orbitron font-bold text-2xl tracking-widest neon-text-cyan uppercase">
+            GURUKUL
+          </span>
+        </div>
+
+        {/* Links */}
+        <div className="hidden md:flex items-center gap-8 font-bold text-sm tracking-widest text-slate-300">
+          <button onClick={() => navigate('/dashboard')} className="hover:text-[#00f0ff] transition-colors flex items-center gap-2">
+            <LayoutDashboard size={16}/> DASHBOARD
+          </button>
+          <button className="hover:text-[#00f0ff] transition-colors flex items-center gap-2">
+            <Terminal size={16}/> MY MODULES
+          </button>
+          <a href="https://ialksng.me/store" className="hover:text-[#b026ff] transition-colors flex items-center gap-2">
+            <ArrowLeft size={16}/> PORTAL
+          </a>
+        </div>
+
+        {/* Profile / Logout */}
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-slate-400 hover:text-red-400 transition-colors font-bold text-sm"
+        >
+          <LogOut size={18} /> <span className="hidden sm:block">DISCONNECT</span>
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+function GlobalFooter() {
+  return (
+    <footer className="glass-panel border-t border-white/5 mt-auto w-full">
+      <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2 text-slate-500 text-sm font-bold tracking-widest">
+          <Cpu size={16} className="text-[#b026ff]"/> SYSTEM V2.0 // ONLINE
+        </div>
+        <p className="text-slate-600 text-sm">
+          &copy; {new Date().getFullYear()} IALKSNG.ME SECURE NETWORK. ALL RIGHTS RESERVED.
+        </p>
+      </div>
+    </footer>
+  );
+}
+
+// Layout Wrapper
+function Layout({ children }) {
+  return (
+    <div className="flex flex-col min-h-screen relative">
+      <GlobalNavbar />
+      <main className="flex-1 flex flex-col w-full">
+        {children}
+      </main>
+      <GlobalFooter />
+    </div>
+  );
+}
+
+
+// --- 2. DASHBOARD ---
 function StudyDashboard() {
   const [courses] = useState([
-    { id: 1, title: 'Advanced Algorithms', progress: 75, totalModules: 12 },
-    { id: 2, title: 'System Design', progress: 30, totalModules: 8 },
-    { id: 3, title: 'Machine Learning', progress: 0, totalModules: 15 }
+    { id: 1, title: 'Advanced Algorithms', progress: 75, totalModules: 12, type: 'CORE' },
+    { id: 2, title: 'System Design Protocol', progress: 30, totalModules: 8, type: 'ARCHITECTURE' },
+    { id: 3, title: 'Neural Networks', progress: 0, totalModules: 15, type: 'AI' }
   ]);
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex">
-      {/* Sidebar */}
-      <div className="w-64 bg-slate-900 border-r border-white/10 p-4 flex flex-col">
-        <div className="flex items-center gap-3 font-bold text-xl mb-8 text-amber-400">
-          <GraduationCap size={28} />
-          Gurukul
+    <div className="p-8 max-w-7xl mx-auto w-full animate-fade-in">
+      
+      {/* Header Profile Section */}
+      <div className="glass-panel neon-border-cyan rounded-2xl p-8 mb-10 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#00f0ff] opacity-10 blur-[100px] rounded-full pointer-events-none"></div>
+        
+        <div>
+          <h1 className="text-4xl md:text-5xl font-orbitron font-black text-white mb-2 uppercase tracking-wide">
+            Welcome, <span className="neon-text-cyan">Operator</span>
+          </h1>
+          <p className="text-slate-400 font-bold tracking-widest text-sm">SECURE LEARNING ENVIRONMENT ACTIVATED</p>
         </div>
-        <nav className="space-y-2 flex-1">
-          <button className="w-full flex items-center gap-3 px-4 py-3 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-xl">
-            <LayoutDashboard size={20} /> Dashboard
-          </button>
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors">
-            <BookOpen size={20} /> My Courses
-          </button>
-        </nav>
-        <a href="https://ialksng.me/store" className="flex items-center gap-2 text-gray-400 hover:text-amber-400 p-4 transition-colors">
-          <ArrowLeft size={18} /> Back to Store
-        </a>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-8 overflow-y-auto">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Welcome to Gurukul</h1>
-          <p className="text-gray-400 mb-8">Continue your learning journey.</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map(course => (
-              <div key={course.id} className="bg-slate-900 border border-white/10 rounded-2xl p-6 hover:border-amber-500/30 transition-all">
-                <div className="h-32 bg-black/40 rounded-xl mb-4 flex items-center justify-center">
-                  <PlayCircle size={40} className="text-amber-500 opacity-50" />
-                </div>
-                <h3 className="font-semibold text-lg mb-1">{course.title}</h3>
-                <p className="text-sm text-gray-400 mb-4">{course.totalModules} Modules</p>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-amber-400 font-medium">{course.progress}% Complete</span>
-                  </div>
-                  <div className="w-full bg-black/50 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full transition-all" style={{ width: `${course.progress}%` }} />
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div className="flex gap-4">
+          <div className="bg-black/50 border border-[#00f0ff]/30 p-4 rounded-xl text-center min-w-[120px]">
+            <p className="text-slate-500 text-xs font-bold tracking-widest mb-1">MODULES</p>
+            <p className="text-3xl font-orbitron font-bold text-[#00f0ff]">3</p>
+          </div>
+          <div className="bg-black/50 border border-[#b026ff]/30 p-4 rounded-xl text-center min-w-[120px]">
+            <p className="text-slate-500 text-xs font-bold tracking-widest mb-1">COMPLETION</p>
+            <p className="text-3xl font-orbitron font-bold text-[#b026ff]">35%</p>
           </div>
         </div>
+      </div>
+
+      <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+        <BookOpen className="text-[#00f0ff]" size={24} />
+        <h2 className="text-2xl font-orbitron font-bold tracking-widest uppercase">Active Databanks</h2>
+      </div>
+
+      {/* Grid of Courses */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {courses.map(course => (
+          <div key={course.id} className="glass-panel rounded-2xl p-6 hover:-translate-y-2 transition-all duration-300 relative group overflow-hidden border border-white/5 hover:border-[#00f0ff]/50">
+            {/* Hover Glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#00f0ff]/0 to-[#00f0ff]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div className="flex justify-between items-start mb-6">
+              <span className="text-[10px] font-bold tracking-widest uppercase bg-[#00f0ff]/10 text-[#00f0ff] px-3 py-1 rounded-full border border-[#00f0ff]/20">
+                {course.type}
+              </span>
+              <PlayCircle size={28} className="text-slate-600 group-hover:text-[#00f0ff] transition-colors" />
+            </div>
+
+            <h3 className="font-orbitron font-bold text-xl mb-2 text-white group-hover:neon-text-cyan transition-all">{course.title}</h3>
+            <p className="text-sm text-slate-500 font-bold tracking-widest mb-6">{course.totalModules} SECTORS</p>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between text-xs font-bold tracking-widest">
+                <span className="text-slate-400">INTEGRATION</span>
+                <span className={course.progress > 0 ? "text-[#00f0ff]" : "text-slate-500"}>{course.progress}%</span>
+              </div>
+              <div className="w-full bg-black/80 rounded-full h-1.5 border border-white/5 overflow-hidden">
+                <div 
+                  className="h-full rounded-full transition-all duration-1000 relative" 
+                  style={{ 
+                    width: `${course.progress}%`,
+                    background: `linear-gradient(90deg, #00f0ff, #b026ff)`,
+                    boxShadow: '0 0 10px #00f0ff'
+                  }} 
+                />
+              </div>
+            </div>
+            
+            {/* Holographic Button */}
+            <button className="w-full mt-6 py-3 bg-white/5 border border-white/10 rounded-xl font-bold tracking-widest text-sm text-slate-300 group-hover:bg-[#00f0ff]/10 group-hover:border-[#00f0ff]/50 group-hover:text-[#00f0ff] transition-all">
+              {course.progress > 0 ? 'RESUME LINK' : 'INITIATE'}
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-// --- 2. SECURE VIEWER ---
+// --- 3. SECURE VIEWER ---
 function LearnViewer() {
-  // FIXED: Now we grab BOTH category and id from the URL params
   const { category, id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
@@ -86,7 +188,6 @@ function LearnViewer() {
       }
 
       try {
-        // Fetch basic product details to get the title (NotesViewer handles the actual secure content fetch)
         const res = await fetch(`${API}/api/products/${id}`, {
           method: 'GET',
           headers: { 
@@ -96,12 +197,10 @@ function LearnViewer() {
         });
         
         const data = await res.json();
-
-        // Check the structure of your typical product response
         const productData = data.product || data.data || data;
 
         if (!res.ok || !productData) {
-          throw new Error("Could not find product details.");
+          throw new Error("Data block corrupted or inaccessible.");
         }
 
         setProduct(productData);
@@ -118,22 +217,27 @@ function LearnViewer() {
 
   if (loading) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#020617] text-amber-500">
-        <Loader2 className="w-10 h-10 animate-spin mb-4" />
-        <p className="tracking-widest uppercase font-bold text-sm">Validating Credentials...</p>
+      <div className="flex-1 flex flex-col items-center justify-center text-[#00f0ff]">
+        <div className="relative w-20 h-20 flex items-center justify-center mb-6">
+          <div className="absolute inset-0 rounded-full border-t-2 border-[#00f0ff] animate-spin"></div>
+          <div className="absolute inset-2 rounded-full border-r-2 border-[#b026ff] animate-spin animate-reverse"></div>
+          <Cpu size={24} className="animate-pulse" />
+        </div>
+        <p className="tracking-[0.3em] uppercase font-bold text-sm animate-pulse">Decrypting File Protocol...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#020617] text-white p-6 text-center">
-        <div className="text-red-500 text-6xl mb-6">🔒</div>
-        <h2 className="text-2xl font-bold mb-4">{error}</h2>
-        <p className="text-slate-400 mb-8 max-w-md mx-auto">If you believe this is an error, please ensure you are logged into the correct account on the main store.</p>
+      <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+        <div className="text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]">
+           <Terminal size={64} />
+        </div>
+        <h2 className="text-3xl font-orbitron font-bold mb-4 text-white uppercase tracking-widest">Access Denied</h2>
+        <p className="text-slate-400 mb-8 max-w-md mx-auto font-bold tracking-wide text-sm">{error}</p>
         <div className="flex gap-4 justify-center">
-          <a href="https://ialksng.me/store" className="px-8 py-3 bg-amber-500 text-black font-bold rounded-xl hover:bg-amber-400 transition-all">Go to Store</a>
-          <button onClick={() => window.location.reload()} className="px-8 py-3 bg-white/5 text-white font-bold rounded-xl border border-white/10 hover:bg-white/10 transition-all">Retry</button>
+          <a href="https://ialksng.me/store" className="px-8 py-3 bg-[#ef4444]/20 border border-red-500 text-red-400 font-bold rounded-xl hover:bg-[#ef4444]/40 transition-all tracking-widest uppercase text-sm">Return to Base</a>
         </div>
       </div>
     );
@@ -142,22 +246,19 @@ function LearnViewer() {
   if (!product) return null;
 
   return (
-    <div className="min-h-screen bg-[#020617] p-4 md:p-8 flex items-center justify-center">
+    <div className="p-4 md:p-8 flex-1 flex flex-col items-center justify-center w-full">
       <div className="w-full max-w-6xl">
-        <button onClick={() => navigate('/dashboard')} className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-amber-400 transition-colors">
-          <ArrowLeft size={16} /> Dashboard
+        <button onClick={() => navigate('/dashboard')} className="mb-6 flex items-center gap-2 text-xs font-bold tracking-widest text-slate-500 hover:text-[#00f0ff] transition-colors uppercase">
+          <ArrowLeft size={16} /> Back to Hub
         </button>
         
-        {/* Render NotesViewer if it is notes, otherwise show course viewer later */}
         {category === 'notes' ? (
-          <NotesViewer 
-            title={product.title} 
-            productId={product._id}
-          />
+          <NotesViewer title={product.title} productId={product._id} />
         ) : (
-          <div className="p-10 text-center text-white bg-slate-900 border border-white/10 rounded-xl">
-             <h2 className="text-2xl font-bold mb-4">Course Player Coming Soon</h2>
-             <p className="text-slate-400">You are currently enrolled in {product.title}</p>
+          <div className="p-16 text-center glass-panel neon-border-cyan rounded-2xl flex flex-col items-center justify-center">
+             <Cpu size={48} className="text-[#00f0ff] mb-6 opacity-50" />
+             <h2 className="text-3xl font-orbitron font-bold mb-4 uppercase tracking-widest neon-text-cyan">Holo-Deck Coming Soon</h2>
+             <p className="text-slate-400 font-bold tracking-widest uppercase text-sm">Module [{product.title}] is currently rendering...</p>
           </div>
         )}
       </div>
@@ -165,31 +266,66 @@ function LearnViewer() {
   );
 }
 
-// --- 3. MAIN ROUTER ---
+// --- 4. AUTH BRIDGE ---
+function AuthBridge() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = searchParams.get('token');
+    const productId = searchParams.get('productId');
+    const category = searchParams.get('category') || 'course';
+
+    if (token) {
+      localStorage.setItem('token', token);
+      setTimeout(() => {
+        if (productId) navigate(`/learn/${category}/${productId}`, { replace: true });
+        else navigate('/dashboard', { replace: true });
+      }, 1500); // Artificial delay for cool sci-fi loading effect
+    } else {
+      navigate('/login', { replace: true });
+    }
+  }, [navigate, searchParams]);
+
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center w-full">
+      <div className="relative w-32 h-32 flex items-center justify-center mb-8">
+        <div className="absolute inset-0 rounded-full border-t-4 border-[#00f0ff] animate-spin shadow-[0_0_15px_#00f0ff]"></div>
+        <div className="absolute inset-4 rounded-full border-b-4 border-[#b026ff] animate-spin shadow-[0_0_15px_#b026ff]" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+        <Cpu size={32} className="text-white animate-pulse" />
+      </div>
+      <h2 className="text-2xl font-orbitron font-bold tracking-[0.2em] neon-text-cyan uppercase mb-2">Establishing Link...</h2>
+      <p className="text-slate-500 font-bold tracking-widest text-xs uppercase">Handshaking with secure servers</p>
+    </div>
+  );
+}
+
+// --- 5. MAIN ROUTER ---
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<StudyDashboard />} />
-        <Route path="/dashboard" element={<StudyDashboard />} />
-        <Route path="/auth-bridge" element={<AuthBridge />} />
-        
-        {/* FIXED: Route now expects /learn/notes/12345 or /learn/course/12345 */}
-        <Route path="/learn/:category/:id" element={<LearnViewer />} />
-        
-        <Route path="/login" element={
-          <div className="h-screen flex items-center justify-center bg-[#020617] text-white">
-            <div className="text-center p-8">
-              <div className="text-amber-500 text-6xl mb-6 mx-auto w-fit">⚡</div>
-              <h2 className="text-3xl font-bold mb-4">Login Required</h2>
-              <p className="text-slate-400 mb-10 max-w-sm mx-auto">Your session is unavailable. Please return to the portal to authenticate.</p>
-              <a href="https://ialksng.me/login" className="px-10 py-4 bg-amber-500 hover:bg-amber-400 text-black font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)]">
-                LOGIN TO PORTAL
-              </a>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<StudyDashboard />} />
+          <Route path="/dashboard" element={<StudyDashboard />} />
+          <Route path="/auth-bridge" element={<AuthBridge />} />
+          <Route path="/learn/:category/:id" element={<LearnViewer />} />
+          <Route path="/login" element={
+            <div className="flex-1 flex items-center justify-center w-full">
+              <div className="text-center p-12 glass-panel neon-border-cyan rounded-2xl max-w-lg w-full mx-4">
+                <div className="text-[#00f0ff] mb-8 mx-auto w-fit drop-shadow-[0_0_15px_#00f0ff]">
+                  <LogOut size={64} />
+                </div>
+                <h2 className="text-3xl font-orbitron font-bold mb-4 uppercase tracking-widest text-white">Connection Lost</h2>
+                <p className="text-slate-400 mb-10 font-bold tracking-wider text-sm">Your secure session token is missing. Return to portal to re-authenticate.</p>
+                <a href="https://ialksng.me/login" className="block w-full py-4 bg-[#00f0ff]/10 border border-[#00f0ff] text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black font-black tracking-widest uppercase rounded-xl transition-all shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+                  RE-ESTABLISH LINK
+                </a>
+              </div>
             </div>
-          </div>
-        } />
-      </Routes>
+          } />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }
