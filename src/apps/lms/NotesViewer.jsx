@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Database, CheckCircle2, BotMessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 import DOMPurify from 'dompurify'; 
-import apiClient from '../../services/apiClient'; 
 
 export default function NotesViewer({ title, productId }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -12,17 +11,35 @@ export default function NotesViewer({ title, productId }) {
     const [error, setError] = useState(null);
     
     const containerRef = useRef(null);
+    
+    // Point directly to your backend URL
+    const API = import.meta.env.VITE_API_URL || "https://ialksng-backend.onrender.com";
 
     useEffect(() => {
         const fetchSecureContent = async () => {
             if (!productId) return;
             try {
                 setIsLoading(true);
-                const response = await apiClient.get(`/api/notes/secure/${productId}`, {
-                    responseType: 'text'
+                const token = localStorage.getItem("token");
+
+                // Use native fetch to bypass any Axios baseURL misconfigurations
+                const response = await fetch(`${API}/api/notes/secure/${productId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
-                const cleanHtml = DOMPurify.sanitize(response.data, {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Access Denied");
+                }
+
+                // Parse the response as raw text (HTML string)
+                const rawHtml = await response.text();
+
+                // Sanitize HTML securely
+                const cleanHtml = DOMPurify.sanitize(rawHtml, {
                     ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'div', 'span', 'img', 'table', 'tr', 'td', 'th', 'tbody', 'thead', 'style'],
                     ALLOWED_ATTR: ['href', 'src', 'style', 'class', 'data-license-tracker'] 
                 });
@@ -30,14 +47,14 @@ export default function NotesViewer({ title, productId }) {
                 setHtmlContent(cleanHtml);
             } catch (err) {
                 console.error(err);
-                setError(err.response?.data?.message || "Could not load the secure document. Please verify your purchase.");
+                setError(err.message || "Could not load the secure document. Please verify your purchase.");
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchSecureContent();
-    }, [productId]);
+    }, [productId, API]);
 
     useEffect(() => {
         const handleContextMenu = (e) => e.preventDefault(); 
@@ -73,12 +90,23 @@ export default function NotesViewer({ title, productId }) {
     const handleSaveToSmartSphere = async () => {
         setIsSaving(true);
         try {
-            await apiClient.post(`/api/smartsphere/vault`, {
-                title: `Gurukul Notes: ${title}`,
-                productId: productId, 
-                type: "notes",
-                projectId: "default" 
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${API}/api/smartsphere/vault`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    title: `Gurukul Notes: ${title}`,
+                    productId: productId, 
+                    type: "notes",
+                    projectId: "default" 
+                })
             });
+
+            if (!res.ok) throw new Error("Failed to save");
+
             setIsSaved(true);
             toast.success("Saved to SmartSphere! ⚡");
         } catch (error) {
