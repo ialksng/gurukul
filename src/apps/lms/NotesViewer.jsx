@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Database, CheckCircle2, BotMessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 import DOMPurify from 'dompurify'; 
-import './NotesViewer.css'; // Importing the new CSS
+import './NotesViewer.css'; // Pure CSS imports
 
 export default function NotesViewer({ title, productId }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +14,6 @@ export default function NotesViewer({ title, productId }) {
     const [error, setError] = useState(null);
     
     const containerRef = useRef(null);
-    
     const API = import.meta.env.VITE_API_URL || "https://ialksng-backend.onrender.com";
 
     useEffect(() => {
@@ -26,9 +25,7 @@ export default function NotesViewer({ title, productId }) {
 
                 const response = await fetch(`${API}/api/notes/secure/${productId}`, {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 if (!response.ok) {
@@ -38,18 +35,24 @@ export default function NotesViewer({ title, productId }) {
 
                 const rawHtml = await response.text();
 
-                // MAGIC CONFIGURATION: 
-                // FORCE_BODY and ADD_TAGS ensure Proton's inline <style> tags survive the purification
                 const cleanHtml = DOMPurify.sanitize(rawHtml, {
                     FORCE_BODY: true,
-                    ADD_TAGS: ['style', 'iframe'],
-                    ALLOWED_ATTR: ['style', 'class', 'width', 'height', 'data-license-tracker', 'src', 'alt', 'href', 'id', 'align', 'valign'] 
+                    ADD_TAGS: ['style'],
+                    ALLOWED_TAGS: [
+                        'b', 'i', 'em', 'strong', 'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
+                        'ul', 'ol', 'li', 'div', 'span', 'img', 'table', 'tr', 'td', 'th', 'tbody', 'thead', 
+                        'style', 'br', 'hr', 'blockquote', 'pre', 'code', 'u', 's'
+                    ],
+                    ALLOWED_ATTR: [
+                        'href', 'src', 'style', 'class', 'data-license-tracker', 
+                        'width', 'height', 'alt', 'id', 'align', 'valign'
+                    ] 
                 });
 
                 setHtmlContent(cleanHtml);
             } catch (err) {
                 console.error(err);
-                setError(err.message || "Could not load the secure document. Please verify your purchase.");
+                setError(err.message || "Could not load the secure document.");
             } finally {
                 setIsLoading(false);
             }
@@ -58,6 +61,7 @@ export default function NotesViewer({ title, productId }) {
         fetchSecureContent();
     }, [productId, API]);
 
+    // Anti-Piracy Event Listeners
     useEffect(() => {
         const handleContextMenu = (e) => e.preventDefault(); 
         
@@ -128,12 +132,12 @@ export default function NotesViewer({ title, productId }) {
             
             <div className="nv-header">
                 <div className="nv-title">
-                    <span>{title}</span>
+                    {title}
                 </div>
 
                 <div className="nv-actions">
                     <button onClick={handleAskIndra} className="nv-btn nv-btn-indra">
-                        <BotMessageSquare size={16} className="icon" />
+                        <BotMessageSquare size={16} />
                         Ask Indra
                     </button>
 
@@ -157,13 +161,13 @@ export default function NotesViewer({ title, productId }) {
                 {isLoading && (
                     <div className="nv-loader-overlay">
                         <Loader2 size={40} className="spin-icon" />
-                        <p className="nv-loader-text">Decrypting Content...</p>
+                        <span className="nv-loader-text">Decrypting Content...</span>
                     </div>
                 )}
                 
                 {!isLoading && error && (
                     <div className="nv-error-box">
-                        <p>{error}</p>
+                        {error}
                     </div>
                 )}
 

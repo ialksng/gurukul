@@ -1,71 +1,54 @@
 /* File: src/apps/lms/NotesViewer.css */
 
+/* --- APP LAYOUT (Dark Mode Frame) --- */
 .nv-container {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 120px);
   width: 100%;
   background-color: #0f172a;
-  border-radius: 0.75rem;
+  border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   user-select: none;
 }
 
-/* Print Protection */
-@media print {
-  body { display: none !important; }
-}
-
-/* Selection & Image Protection */
-.nv-content-wrapper ::selection {
-  background: rgba(255, 0, 0, 0.1);
-  color: inherit;
-}
-.nv-content-wrapper img {
-  pointer-events: none;
-}
-
-/* Header Toolbar */
 .nv-header {
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
-  padding: 0.75rem 1.5rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  padding: 12px 24px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  z-index: 20;
+  z-index: 10;
 }
 
 .nv-title {
-  color: #e2e8f0;
-  font-weight: 700;
-  letter-spacing: 0.025em;
+  color: #f8fafc;
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 0.5px;
 }
 
 .nv-actions {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
-/* Buttons */
 .nv-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: 700;
-  font-size: 0.875rem;
-  transition: all 0.2s ease-in-out;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
   border: none;
+  transition: all 0.2s;
 }
 
 .nv-btn-indra {
@@ -73,151 +56,150 @@
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
-.nv-btn-indra:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-.nv-btn-indra .icon {
-  color: #fbbf24;
-}
+.nv-btn-indra:hover { background-color: rgba(255, 255, 255, 0.1); }
+.nv-btn-indra svg { color: #fbbf24; }
 
 .nv-btn-save {
-  background: linear-gradient(to right, #f59e0b, #f97316);
+  background: linear-gradient(90deg, #f59e0b, #f97316);
   color: black;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
-.nv-btn-save:hover:not(:disabled) {
-  transform: scale(1.05);
-}
-.nv-btn-save:disabled {
-  opacity: 0.8;
-  cursor: not-allowed;
-  transform: none;
-}
+.nv-btn-save:hover:not(:disabled) { transform: translateY(-2px); }
+.nv-btn-save:disabled { opacity: 0.7; cursor: not-allowed; }
+
 .nv-btn-saved {
-  background: rgba(16, 185, 129, 0.2);
+  background-color: rgba(16, 185, 129, 0.2);
   color: #34d399;
   border: 1px solid rgba(16, 185, 129, 0.3);
-  box-shadow: none;
 }
 
-/* Main Content Area */
+/* --- MAIN CONTENT AREA --- */
 .nv-content-wrapper {
   position: relative;
   flex: 1;
   width: 100%;
-  background-color: #f8fafc; /* Soft document background */
+  background-color: #cbd5e1; /* Gray desk background */
   overflow-y: auto;
-  padding: 2rem 4rem;
+  padding: 40px;
 }
 
 .nv-loader-overlay {
   position: absolute;
   inset: 0;
-  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: #0f172a;
   color: #f59e0b;
+  z-index: 20;
 }
-
 .nv-loader-text {
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-top: 1rem;
+  margin-top: 16px;
+  font-weight: bold;
+  letter-spacing: 2px;
 }
+.spin-icon { animation: spin 1s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
 
 .nv-error-box {
-  color: #f87171;
-  text-align: center;
-  margin-top: 2.5rem;
-  padding: 1rem;
-  border: 1px solid rgba(239, 68, 68, 0.3);
   background-color: #0f172a;
-  border-radius: 0.5rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.25rem;
-}
-
-.spin-icon {
-  animation: nv-spin 1s linear infinite;
-}
-
-@keyframes nv-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* =========================================
-   THE MAGIC FIX: PROTON DOCS FORMATTING
-   This explicitly tells the browser to IGNORE
-   Tailwind CSS and restore standard word document styles
-   ========================================= */
-
-.proton-doc-container {
-  background: white;
-  padding: 3rem 4rem;
+  color: #ef4444;
+  padding: 20px;
+  text-align: center;
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  max-width: 900px;
+  border: 1px solid #ef4444;
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 40px;
+}
+
+/* --- DOCUMENT STYLES (OVERRIDING ALL TAILWIND RESETS) --- */
+.proton-doc-container {
+  background-color: white;
+  max-width: 850px;
   margin: 0 auto;
+  padding: 60px 80px; /* Looks like an A4 paper */
+  border-radius: 4px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   color: black;
 }
 
-/* 1. Force revert all inner elements to browser default (strips Tailwind) */
-.proton-doc * {
-  all: revert;
-}
-
-/* 2. Base Document Typography */
+/* Base text */
 .proton-doc {
-  font-family: Arial, Helvetica, sans-serif;
-  line-height: 1.6;
-  font-size: 11pt; /* Standard doc size */
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 11pt !important;
+  line-height: 1.6 !important;
+  color: #000 !important;
+  text-align: left !important;
 }
 
-/* 3. Ensure Lists actually show bullets and numbers */
-.proton-doc ul {
-  list-style-type: disc !important;
-  padding-left: 40px !important;
-  margin-bottom: 1em !important;
+/* Headings */
+.proton-doc h1 { font-size: 28pt !important; font-weight: bold !important; margin: 24pt 0 12pt 0 !important; border-bottom: 1px solid #ccc !important; padding-bottom: 8pt !important; display: block !important; }
+.proton-doc h2 { font-size: 20pt !important; font-weight: bold !important; margin: 20pt 0 10pt 0 !important; display: block !important; }
+.proton-doc h3 { font-size: 16pt !important; font-weight: bold !important; margin: 16pt 0 8pt 0 !important; display: block !important; }
+.proton-doc h4 { font-size: 14pt !important; font-weight: bold !important; margin: 14pt 0 8pt 0 !important; display: block !important; }
+.proton-doc p { margin: 0 0 12pt 0 !important; display: block !important; }
+
+/* Lists (Forcing Bullets to show up) */
+.proton-doc ul { 
+  display: block !important; 
+  list-style-type: disc !important; 
+  margin: 0 0 12pt 0 !important; 
+  padding-left: 40px !important; 
 }
-.proton-doc ol {
-  list-style-type: decimal !important;
-  padding-left: 40px !important;
-  margin-bottom: 1em !important;
+.proton-doc ol { 
+  display: block !important; 
+  list-style-type: decimal !important; 
+  margin: 0 0 12pt 0 !important; 
+  padding-left: 40px !important; 
 }
-.proton-doc li {
-  display: list-item !important;
-  margin-bottom: 0.5em !important;
+.proton-doc li { 
+  display: list-item !important; 
+  margin-bottom: 6pt !important; 
 }
 
-/* 4. Fix Headings */
-.proton-doc h1 { font-size: 2.5em !important; font-weight: bold !important; margin-bottom: 0.5em !important; }
-.proton-doc h2 { font-size: 1.8em !important; font-weight: bold !important; margin-bottom: 0.5em !important; }
-.proton-doc h3 { font-size: 1.4em !important; font-weight: bold !important; margin-bottom: 0.5em !important; }
+/* Nested lists */
+.proton-doc ul ul { list-style-type: circle !important; margin-bottom: 0 !important; }
+.proton-doc ul ul ul { list-style-type: square !important; }
 
-/* 5. Fix Image Resizing (prevents massive stretched images) */
+/* Images */
 .proton-doc img {
+  display: block !important;
   max-width: 100% !important;
   height: auto !important;
-  margin: 1em 0;
+  margin: 16px auto !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* 6. Fix Tables */
+/* Tables */
 .proton-doc table {
-  border-collapse: collapse !important;
+  display: table !important;
   width: 100% !important;
-  margin: 1em 0 !important;
+  border-collapse: collapse !important;
+  margin: 16pt 0 !important;
 }
 .proton-doc th, .proton-doc td {
-  border: 1px solid #ccc !important;
+  border: 1px solid #000 !important;
   padding: 8px !important;
+  text-align: left !important;
 }
+.proton-doc th { background-color: #f0f0f0 !important; font-weight: bold !important; }
+
+/* Code and quotes */
+.proton-doc pre {
+  display: block !important;
+  background-color: #f4f4f4 !important;
+  padding: 12px !important;
+  border: 1px solid #ddd !important;
+  overflow-x: auto !important;
+  font-family: monospace !important;
+  margin-bottom: 12pt !important;
+}
+.proton-doc code { font-family: monospace !important; background-color: #f4f4f4 !important; padding: 2px 4px !important; }
+.proton-doc blockquote { display: block !important; border-left: 4px solid #ccc !important; padding-left: 16px !important; margin: 0 0 12pt 0 !important; color: #555 !important; font-style: italic !important; }
+
+/* Security Protections */
+@media print { body { display: none !important; } }
+.nv-content-wrapper ::selection { background: rgba(255,0,0,0.1); color: inherit; }
+.nv-content-wrapper img { pointer-events: none; }
+.proton-doc a { pointer-events: none; color: #0563c1; text-decoration: underline; }
