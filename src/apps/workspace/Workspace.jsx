@@ -30,12 +30,19 @@ export default function Workspace() {
     setIsExecuting(true);
     setOutput("Compiling and executing in secure sandbox...");
     try {
-      // Points to the newly created backend route
+      // Updated for the 100% free Piston API backend
       const res = await apiClient.post('/api/v1/gurukul/code/run', {
         sourceCode: code,
-        languageId: 71 // 71 is Python in Judge0
+        language: "python", // Using plain text instead of Judge0's ID (71)
+        version: "3.10.0"   // Specifying version for Piston
       });
-      setOutput(res.data.output || res.data.error || "Program exited with code 0.");
+      
+      if (res.data.error) {
+         setOutput(res.data.error);
+      } else {
+         setOutput(res.data.output || "Program exited successfully with no output.");
+      }
+
     } catch (err) {
       setOutput("Error connecting to execution sandbox.");
     } finally {
