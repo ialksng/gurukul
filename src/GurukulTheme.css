@@ -1,61 +1,185 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&display=swap');
+/* File: src/index.css */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* 1. IMPORT LATEST TAILWIND V4 */
+@import "tailwindcss";
 
+/* 2. IMPORT GOOGLE FONTS */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&display=swap');
+
+/* 3. DEFINE CUSTOM THEME VARIABLES FOR TAILWIND V4 */
+@theme {
+  --font-orbitron: 'Orbitron', sans-serif;
+  --font-rajdhani: 'Rajdhani', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --color-cyan-glow: #00f0ff;
+  --color-purple-glow: #b026ff;
+  --color-space-black: #030308;
+}
+
+/* =========================================
+   GLOBAL BASE & BACKGROUND
+   ========================================= */
 body {
-  background-color: #030308; 
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-space-black);
   color: #e2e8f0;
-  font-family: 'Rajdhani', sans-serif;
+  font-family: var(--font-rajdhani);
   background-image: 
     radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.05), transparent 30%),
-    radial-gradient(circle at 85% 30%, rgba(138, 43, 226, 0.05), transparent 30%);
+    radial-gradient(circle at 85% 30%, rgba(176, 38, 255, 0.05), transparent 30%);
   background-attachment: fixed;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, .font-orbitron {
-  font-family: 'Orbitron', sans-serif;
+/* Base Fonts */
+h1, h2, h3, h4, h5, h6, .font-orbitron {
+  font-family: var(--font-orbitron);
 }
 
+.font-rajdhani {
+  font-family: var(--font-rajdhani);
+}
+
+.font-monospace {
+  font-family: var(--font-mono);
+}
+
+/* =========================================
+   GLASSMORPHISM & PANELS
+   ========================================= */
+.glass-panel {
+  background: rgba(10, 10, 15, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* =========================================
+   NEON GLOWS & BORDERS
+   ========================================= */
+/* Cyan Glowing Border */
 .neon-border-cyan {
   border: 1px solid rgba(0, 240, 255, 0.3);
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.1), inset 0 0 10px rgba(0, 240, 255, 0.05);
 }
-
 .neon-border-cyan:hover {
   border-color: rgba(0, 240, 255, 0.8);
   box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.2);
 }
 
+/* Text Glows */
 .neon-text-cyan {
-  color: #00f0ff;
+  color: var(--color-cyan-glow);
   text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
 }
-
 .neon-text-purple {
-  color: #b026ff;
+  color: var(--color-purple-glow);
   text-shadow: 0 0 8px rgba(176, 38, 255, 0.6);
 }
 
-.glass-panel {
-  background: rgba(10, 10, 15, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
+/* =========================================
+   CUSTOM SCROLLBARS (Cyberpunk style)
+   ========================================= */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #030308;
+  background: var(--color-space-black);
+  border-left: 1px solid rgba(255,255,255,0.05);
 }
 ::-webkit-scrollbar-thumb {
   background: #1e293b;
-  border-radius: 4px;
+  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00f0ff;
+  background: var(--color-cyan-glow);
+  box-shadow: 0 0 10px var(--color-cyan-glow);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(176, 38, 255, 0.5);
+}
+
+/* =========================================
+   ANIMATIONS
+   ========================================= */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-reverse {
+  animation-direction: reverse;
+}
+
+/* =========================================
+   MARKDOWN / PROSE OVERRIDES (For AI Lessons)
+   ========================================= */
+.prose {
+  color: #cbd5e1;
+}
+.prose h1, .prose h2, .prose h3 {
+  color: #f8fafc;
+  font-family: var(--font-orbitron);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+.prose p {
+  margin-bottom: 1.2em;
+  line-height: 1.7;
+}
+.prose code {
+  background: rgba(255,255,255,0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  color: var(--color-cyan-glow);
+  font-size: 0.9em;
+}
+.prose pre {
+  background: #0a0a0f !important;
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5em 0;
+}
+.prose pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-bottom: 1.5em;
+}
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin-bottom: 1.5em;
+}
+.prose li {
+  margin-bottom: 0.5em;
+}
+.prose blockquote {
+  border-left: 4px solid var(--color-purple-glow);
+  padding-left: 1em;
+  color: #94a3b8;
+  font-style: italic;
+  background: rgba(176, 38, 255, 0.05);
+  padding: 1em;
+  border-radius: 0 8px 8px 0;
 }
