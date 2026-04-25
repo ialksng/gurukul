@@ -68,7 +68,8 @@ function StudyDashboard() {
 
 // --- 2. SECURE VIEWER ---
 function LearnViewer() {
-  const { id } = useParams();
+  // FIXED: Now we grab BOTH category and id from the URL params
+  const { category, id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -77,7 +78,7 @@ function LearnViewer() {
   const API = import.meta.env.VITE_API_URL || "https://ialksng-backend.onrender.com";
 
   useEffect(() => {
-    const fetchSecureContent = async () => {
+    const fetchProductMetadata = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
         navigate('/login');
@@ -85,7 +86,8 @@ function LearnViewer() {
       }
 
       try {
-        const res = await fetch(`${API}/api/products/access/secure/${id}`, {
+        // Fetch basic product details to get the title (NotesViewer handles the actual secure content fetch)
+        const res = await fetch(`${API}/api/products/${id}`, {
           method: 'GET',
           headers: { 
             'Content-Type': 'application/json',
@@ -95,11 +97,14 @@ function LearnViewer() {
         
         const data = await res.json();
 
-        if (!res.ok || !data.success) {
-          throw new Error(data.message || "Access verification failed.");
+        // Check the structure of your typical product response
+        const productData = data.product || data.data || data;
+
+        if (!res.ok || !productData) {
+          throw new Error("Could not find product details.");
         }
 
-        setProduct(data.data);
+        setProduct(productData);
       } catch (err) {
         console.error("LearnViewer Error:", err.message);
         setError(err.message);
@@ -108,7 +113,7 @@ function LearnViewer() {
       }
     };
 
-    if (id) fetchSecureContent();
+    if (id) fetchProductMetadata();
   }, [id, navigate, API]);
 
   if (loading) {
@@ -142,11 +147,19 @@ function LearnViewer() {
         <button onClick={() => navigate('/dashboard')} className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-amber-400 transition-colors">
           <ArrowLeft size={16} /> Dashboard
         </button>
-        <NotesViewer 
-          title={product.title} 
-          notionUrl={product.notionUrl || product.fileUrl} 
-          productId={product._id}
-        />
+        
+        {/* Render NotesViewer if it is notes, otherwise show course viewer later */}
+        {category === 'notes' ? (
+          <NotesViewer 
+            title={product.title} 
+            productId={product._id}
+          />
+        ) : (
+          <div className="p-10 text-center text-white bg-slate-900 border border-white/10 rounded-xl">
+             <h2 className="text-2xl font-bold mb-4">Course Player Coming Soon</h2>
+             <p className="text-slate-400">You are currently enrolled in {product.title}</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -160,7 +173,10 @@ export default function App() {
         <Route path="/" element={<StudyDashboard />} />
         <Route path="/dashboard" element={<StudyDashboard />} />
         <Route path="/auth-bridge" element={<AuthBridge />} />
-        <Route path="/learn/:id" element={<LearnViewer />} />
+        
+        {/* FIXED: Route now expects /learn/notes/12345 or /learn/course/12345 */}
+        <Route path="/learn/:category/:id" element={<LearnViewer />} />
+        
         <Route path="/login" element={
           <div className="h-screen flex items-center justify-center bg-[#020617] text-white">
             <div className="text-center p-8">
