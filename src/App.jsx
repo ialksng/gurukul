@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { BookOpen, GraduationCap, LayoutDashboard, ArrowLeft, PlayCircle, Loader2, Cpu, LogOut, Terminal } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import Workspace from './apps/workspace/Workspace';
 
 // Import components
 import NotesViewer from './apps/lms/NotesViewer';
@@ -324,6 +325,7 @@ export default function App() {
               </div>
             </div>
           } />
+          <Route path="/workspace/:pathId/:lessonId" element={<Workspace />} />
         </Routes>
       </Layout>
     </BrowserRouter>
